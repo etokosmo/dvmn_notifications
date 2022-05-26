@@ -27,6 +27,7 @@ pip install -r requirements.txt
 TELEGRAM_API_TOKEN=... #Токен полученный на https://telegram.me/BotFather
 TELEGRAM_CHAT_ID=... #Chat id канала @someone_chat
 DEVMAN_API_TOKEN=... #Персональный токен dvmn.org https://dvmn.org/api/docs/
+SLEEP_TIME=... #Время задержки между повторным запросом в случае ошибки
 ```
 
 - Запустить скрипт
