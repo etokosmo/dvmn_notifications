@@ -2,8 +2,9 @@ import asyncio
 
 import requests
 import telegram
+from loguru import logger
 
-from config import TELEGRAM_API_TOKEN, TELEGRAM_CHAT_ID, LONG_POLLING_URL, HEADERS
+from config import TELEGRAM_API_TOKEN, TELEGRAM_CHAT_ID, LONG_POLLING_URL, HEADERS, PATH_TO_LOGS, SLEEP_TIME
 
 
 async def get_review(response):
@@ -26,7 +27,13 @@ async def main():
             response.raise_for_status()
             timestamp = response.json().get("timestamp_to_request")
             status = response.json().get("status")
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
+        except requests.exceptions.ReadTimeout:
+            logger.debug(f'Сервер не ответил...Ждем и посылаем запрос еще раз.')
+            await asyncio.sleep(SLEEP_TIME)
+            continue
+        except requests.exceptions.ConnectionError:
+            logger.debug(f'Потеряно соединение...Ждем подключения.')
+            await asyncio.sleep(SLEEP_TIME)
             continue
         if status == 'found':
             timestamp = response.json().get("new_attempts")[0].get("timestamp")
@@ -40,4 +47,5 @@ async def send_message(msg: str):
 
 
 if __name__ == '__main__':
+    logger.add(PATH_TO_LOGS, level='DEBUG')
     asyncio.run(main())
