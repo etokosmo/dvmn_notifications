@@ -7,8 +7,8 @@ from loguru import logger
 from config import TELEGRAM_API_TOKEN, TELEGRAM_CHAT_ID, LONG_POLLING_URL, HEADERS, PATH_TO_LOGS, SLEEP_TIME
 
 
-async def get_review(response):
-    content = response.json().get("new_attempts")[0]
+async def get_review(processed_response: dict):
+    content = processed_response.get("new_attempts")[0]
     is_negative = content.get("is_negative")
     lesson_title = content.get("lesson_title")
     lesson_url = content.get("lesson_url")
@@ -25,8 +25,9 @@ async def main():
             payload = {'timestamp': timestamp}
             response = requests.get(LONG_POLLING_URL, headers=HEADERS, params=payload)
             response.raise_for_status()
-            timestamp = response.json().get("timestamp_to_request")
-            status = response.json().get("status")
+            processed_response = response.json()
+            timestamp = processed_response.get("timestamp_to_request")
+            status = processed_response.get("status")
         except requests.exceptions.ReadTimeout:
             logger.debug(f'Сервер не ответил...Ждем и посылаем запрос еще раз.')
             await asyncio.sleep(SLEEP_TIME)
@@ -36,8 +37,8 @@ async def main():
             await asyncio.sleep(SLEEP_TIME)
             continue
         if status == 'found':
-            timestamp = response.json().get("new_attempts")[0].get("timestamp")
-            await get_review(response)
+            timestamp = processed_response.get("new_attempts")[0].get("timestamp")
+            await get_review(processed_response)
 
 
 async def send_message(msg: str):
