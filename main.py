@@ -18,19 +18,18 @@ async def get_review(response):
 
 
 async def main():
-    timeout = None
+    timestamp = None
     while True:
         try:
-            payload = {'timestamp': timeout}
+            payload = {'timestamp': timestamp}
             response = requests.get(LONG_POLLING_URL, headers=HEADERS, params=payload)
             response.raise_for_status()
-            timeout = response.json().get("timestamp_to_request")
-            if not timeout:
-                timeout = response.json().get("timestamp")
+            timestamp = response.json().get("timestamp_to_request")
             status = response.json().get("status")
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             continue
         if status == 'found':
+            timestamp = response.json().get("new_attempts")[0].get("timestamp")
             await get_review(response)
 
 
