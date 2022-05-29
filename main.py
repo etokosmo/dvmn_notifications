@@ -40,20 +40,18 @@ async def main():
             payload = {'timestamp': timestamp}
             response = requests.get(long_polling_url, headers=headers, params=payload)
             response.raise_for_status()
-            processed_response = response.json()
-            timestamp = processed_response.get("timestamp_to_request")
-            status = processed_response.get("status")
+            checks = response.json()
+            timestamp = checks.get("timestamp_to_request")
+            status = checks.get("status")
         except requests.exceptions.ReadTimeout:
-            logger.debug(f'Сервер не ответил...Ждем и посылаем запрос еще раз.')
-            await asyncio.sleep(sleep_time)
             continue
         except requests.exceptions.ConnectionError:
             logger.debug(f'Потеряно соединение...Ждем подключения.')
             await asyncio.sleep(sleep_time)
             continue
         if status == 'found':
-            timestamp = processed_response.get("new_attempts")[0].get("timestamp")
-            await get_review(processed_response, telegram_api_token, telegram_chat_id)
+            timestamp = checks.get("last_attempt_timestamp")
+            await get_review(checks, telegram_api_token, telegram_chat_id)
 
 
 async def send_message(msg: str, telegram_api_token: str, telegram_chat_id: str):
