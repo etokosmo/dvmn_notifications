@@ -1,5 +1,6 @@
 import asyncio
 import os
+from time import sleep
 
 import requests
 import telegram
@@ -72,4 +73,10 @@ async def send_message(msg: str, telegram_api_token: str, telegram_chat_id: str)
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    while True:
+        try:
+            asyncio.run(main())
+        except Exception as error:
+            logger.error("Бот упал с ошибкой:")
+            logger.error(error)
+            sleep(90)
