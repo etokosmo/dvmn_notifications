@@ -10,6 +10,7 @@ from notifiers.logging import NotificationHandler
 
 BASE_DIR = os.path.dirname(__file__) or '.'
 PATH_TO_LOGS = os.path.join(BASE_DIR, 'logs', 'logs.log')
+COUNT_HANDLERS = 3
 
 
 async def get_review(processed_response: dict, telegram_api_token: str, telegram_chat_id: str):
@@ -35,7 +36,7 @@ async def main():
     headers = {
         "Authorization": f"Token {devman_api_token}"
     }
-    if len(logger._core.handlers.values()) < 3:
+    if len(logger._core.handlers) < COUNT_HANDLERS:
         params = {
             'token': telegram_api_token,
             'chat_id': telegram_chat_id
