@@ -35,14 +35,15 @@ async def main():
     headers = {
         "Authorization": f"Token {devman_api_token}"
     }
+    if len(logger._core.handlers.values()) < 3:
+        params = {
+            'token': telegram_api_token,
+            'chat_id': telegram_chat_id
+        }
+        tg_handler = NotificationHandler("telegram", defaults=params)
+        logger.add(tg_handler, format='{message}', level="INFO")
+        logger.add(PATH_TO_LOGS, level='DEBUG')
 
-    params = {
-        'token': telegram_api_token,
-        'chat_id': telegram_chat_id
-    }
-    tg_handler = NotificationHandler("telegram", defaults=params)
-    logger.add(tg_handler, format='{message}', level="INFO")
-    logger.add(PATH_TO_LOGS, level='DEBUG')
     logger.info(f'Стартуем.')
 
     timestamp = None
@@ -79,4 +80,4 @@ if __name__ == '__main__':
         except Exception as error:
             logger.error("Бот упал с ошибкой:")
             logger.error(error)
-            sleep(90)
+            sleep(3600)
