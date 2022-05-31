@@ -5,6 +5,7 @@ import requests
 import telegram
 from environs import Env
 from loguru import logger
+from notifiers.logging import NotificationHandler
 
 BASE_DIR = os.path.dirname(__file__) or '.'
 PATH_TO_LOGS = os.path.join(BASE_DIR, 'logs', 'logs.log')
@@ -33,6 +34,16 @@ async def main():
     headers = {
         "Authorization": f"Token {devman_api_token}"
     }
+
+    params = {
+        'token': telegram_api_token,
+        'chat_id': telegram_chat_id
+    }
+    tg_handler = NotificationHandler("telegram", defaults=params)
+    logger.add(tg_handler, format='{message}', level="INFO")
+    logger.add(PATH_TO_LOGS, level='DEBUG')
+    logger.info(f'Стартуем.')
+
     timestamp = None
 
     while True:
@@ -46,7 +57,7 @@ async def main():
         except requests.exceptions.ReadTimeout:
             continue
         except requests.exceptions.ConnectionError:
-            logger.debug(f'Потеряно соединение...Ждем подключения.')
+            logger.warning(f'Потеряно соединение...Ждем подключения.')
             await asyncio.sleep(sleep_time)
             continue
         if status == 'found':
@@ -61,5 +72,4 @@ async def send_message(msg: str, telegram_api_token: str, telegram_chat_id: str)
 
 
 if __name__ == '__main__':
-    logger.add(PATH_TO_LOGS, level='DEBUG')
     asyncio.run(main())
