@@ -55,4 +55,3 @@ heroku login
 heroku git:remote -a app_name
 heroku logs --tail
 ```
-
