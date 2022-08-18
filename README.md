@@ -43,15 +43,37 @@ python3 main.py
 * Зарегестировать аккаунт и создать приложение. 
 * Интегрировать код из собственного репозитория на GitHub.
 * В репозитории необходим файл `Procfile` в котором прописано:
-```buildoutcfg
+```bash
 bot: python3 main.py
 ```
 * Во вкладке `Settings` -> `Config Vars` прописать переменные окружения из `.env`.
 * Во вкладке `Deploy` произвести деплой.
 * Для удобства отслеживания логов можно установить `Heroku CLI`.
 * Для подключения приложения в `CLI` прописать 
-```buildoutcfg
+```bash
 heroku login
 heroku git:remote -a app_name
 heroku logs --tail
+```
+
+## Deploy with Docker
+
+* Go to the directory where you place main.py
+* Login with command:
+```bash
+heroku login
+heroku container:login
+```
+* Build and push an image with command:
+```bash
+heroku container:push --app <HEROKU_APP_NAME> worker
+```
+* Create a new release with command:
+```bash
+heroku container:release --app <HEROKU_APP_NAME> worker
+```
+* In `Resources` on `Heroku` activate worker with your Dynos
+* Watch logs with command:
+```bash
+heroku logs --tail --app <HEROKU_APP_NAME>
 ```
