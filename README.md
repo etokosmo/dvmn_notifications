@@ -36,6 +36,28 @@ SLEEP_TIME=... #Время задержки между повторным зап
 python3 main.py
 ```
 
+## Run with Docker
+
+- Download code
+- Set environment variables in `.env` file in current directory in `KEY=VALUE` format
+- Build an image from a Dockerfile:
+```bash
+docker build -t dvmn_notifications .
+```
+- Create and run a new container from an image:
+```bash
+docker run dvmn_notifications # you can add -d option to run container in background and print container ID
+```
+P.S.
+- To show list of containers:
+```bash
+docker ps # you can copy id
+```
+- To stop container
+```bash
+docker stop [OPTIONS] CONTAINER [CONTAINER...]
+```
+
 ## Деплой
 Деплой можно осуществить на [heroku](https://id.heroku.com/login).
 
